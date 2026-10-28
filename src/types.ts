@@ -1,14 +1,4 @@
-import type {
-  BlockField,
-  BlockFieldColumns,
-  BlockFieldTypes,
-  LogField,
-  LogFieldColumns,
-  LogFieldTypes,
-  TransactionField,
-  TransactionFieldColumns,
-  TransactionFieldTypes,
-} from "./fields.js";
+import type { BlockField, BlockFieldTypes, LogField, LogFieldTypes, TransactionField, TransactionFieldTypes } from "./fields.js";
 
 /** `0x`-prefixed hex string. */
 export type Hex = string;
@@ -75,17 +65,17 @@ export interface Query<L extends LogField = LogField, T extends TransactionField
 type ExpandTopics<F> = F extends "topics" ? "topic0" | "topic1" | "topic2" | "topic3" : F;
 type Simplify<T> = { [K in keyof T]: T[K] } & {};
 
-/** A log row with exactly the selected fields, keyed by response (snake_case) name. */
+/** A log row with exactly the selected fields, keyed by the names you selected (`blockNumber`). */
 export type LogRow<F extends LogField = LogField> = Simplify<{
-  [K in Exclude<ExpandTopics<F>, "topics"> as LogFieldColumns[K]]: LogFieldTypes[K];
+  [K in Exclude<ExpandTopics<F>, "topics">]: LogFieldTypes[K];
 }>;
 /** A transaction row with exactly the selected fields. */
 export type TransactionRow<F extends TransactionField = TransactionField> = Simplify<{
-  [K in F as TransactionFieldColumns[K]]: TransactionFieldTypes[K];
+  [K in F]: TransactionFieldTypes[K];
 }>;
 /** A block row with exactly the selected fields. */
 export type BlockRow<F extends BlockField = BlockField> = Simplify<{
-  [K in F as BlockFieldColumns[K]]: BlockFieldTypes[K];
+  [K in F]: BlockFieldTypes[K];
 }>;
 
 /** What a response says about itself. */

@@ -9,16 +9,19 @@ async function narrowing() {
     logs: [{ address: ["0x00"] }],
     fields: { log: ["blockNumber", "data", "topics"], block: ["number", "baseFeePerGas", "withdrawals"] },
   });
-  const n: number = page.logs[0]!.block_number;
+  const n: number = page.logs[0]!.blockNumber;
   const d: string = page.logs[0]!.data;
   const t3: string | null = page.logs[0]!.topic3; // "topics" selects topic0..topic3
-  const fee: string | null = page.blocks[0]!.base_fee_per_gas;
+  const fee: string | null = page.blocks[0]!.baseFeePerGas;
   const amount: number | undefined = page.blocks[0]!.withdrawals?.[0]?.amount;
+  const validator: number | undefined = page.blocks[0]!.withdrawals?.[0]?.validatorIndex;
+  // @ts-expect-error rows use the request's names: blockNumber, not block_number
+  page.logs[0]!.block_number;
   // @ts-expect-error address was not selected
   page.logs[0]!.address;
   // @ts-expect-error no transaction fields were selected
   page.transactions[0]!.hash;
-  void [n, d, t3, fee, amount];
+  void [n, d, t3, fee, amount, validator];
 }
 
 async function wrongNames() {

@@ -58,14 +58,15 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * A Bloklake client for one chain. Queries travel as Apache Arrow and are decoded here into
- * plain JSON rows (the same values `/query/json` would give).
+ * plain JSON rows: the same values `/query/json` would give, keyed by the same camelCase names
+ * you select in `fields` (`blockNumber`, not the response's `block_number`).
  *
  * ```ts
  * const bl = new Bloklake({ apiKey: process.env.BLOKLAKE_API_KEY, chain: "eth" });
  * for await (const page of bl.paginate({ fromBlock: 19_000_000, toBlock: 19_100_000,
  *   logs: [{ address: [USDC], topic0: [TRANSFER] }],
  *   fields: { log: ["blockNumber", "topic1", "topic2", "data"] } })) {
- *   for (const log of page.logs) console.log(log.block_number, log.data);
+ *   for (const log of page.logs) console.log(log.blockNumber, log.data);
  * }
  * ```
  */
@@ -146,7 +147,7 @@ export class Bloklake {
   private async queryBody(body: Record<string, unknown>): Promise<Page> {
     return this.withRetries(async () => {
       const res = await this.send("POST", "/query", body);
-      const { rows, meta } = await decodeArrow(res.body!);
+      const { rows, meta } = await decodeArrow(res.body!, { camelCase: true });
       return {
         logs: (rows.logs ?? []) as never[],
         transactions: (rows.transactions ?? []) as never[],

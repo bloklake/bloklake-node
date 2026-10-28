@@ -34,7 +34,7 @@ const page = await bl.query({
 });
 
 for (const log of page.logs) {
-  log.block_number; // number
+  log.blockNumber;  // number: rows use the names you selected
   log.data;         // "0x…"
   // log.address    // compile error: not selected
 }
@@ -43,7 +43,7 @@ console.log(page.meta.nextBlock);
 
 ## Reading a whole range
 
-`paginate` follows `next_block` until `toBlock` (or the chain head when you leave `toBlock`
+`paginate` follows `nextBlock` until `toBlock` (or the chain head when you leave `toBlock`
 out). After the first page it sends only the prepared-query id, and falls back to the full
 query if the id expired.
 
@@ -74,7 +74,11 @@ A `Page` has `logs`, `transactions` and `blocks` arrays (empty when not requeste
 | `queryId` | the prepared-query id |
 | `unavailableFields` | selected fields this chain doesn't have |
 
-Rows use the API's column names (`block_number`, `transaction_hash`) and its JSON encoding:
+Rows are keyed by the same camelCase names you select in `fields` (`blockNumber`,
+`transactionHash`; nested objects too, e.g. `accessList[0].storageKeys`), with the API's JSON
+encoding. The raw HTTP API (`/query/json`, the Arrow column names) uses snake_case
+(`block_number`): `decodeArrow(body)` returns those keys, `decodeArrow(body, { camelCase: true })`
+the client's.
 
 | Field kind | Value |
 |---|---|

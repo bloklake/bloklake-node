@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { decodeArrow, BloklakeError } from "../dist/index.js";
+import { decodeArrow, camelCase, BloklakeError } from "../dist/index.js";
 
 const fixture = (name) => new Uint8Array(readFileSync(new URL(`./fixtures/${name}`, import.meta.url)));
 const json = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), "utf8"));
@@ -18,6 +18,22 @@ for (const name of ["eth-all-fields", "rh-all-fields", "eth-logs-only", "eth-emp
     }
     assert.equal(Number(meta.get("bl.objects")), expected.objects);
     assert.equal(Number(meta.get("bl.next_block")), expected.next_block);
+  });
+}
+
+/** The server's JSON with every object key camelCased, nested ones included. */
+const camelKeys = (v) =>
+  Array.isArray(v) ? v.map(camelKeys)
+  : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [camelCase(k), camelKeys(x)]))
+  : v;
+
+for (const name of ["eth-all-fields", "rh-all-fields", "synthetic-u256"]) {
+  test(`${name}: camelCase rows equal the server's /query/json with camelCase keys`, async () => {
+    const { rows } = await decodeArrow(fixture(`${name}.arrows`), { camelCase: true });
+    const expected = json(`${name}.json`);
+    for (const rt of ["transactions", "logs", "blocks"]) {
+      if (expected[rt] !== undefined) assert.deepStrictEqual(rows[rt], camelKeys(expected[rt]), rt);
+    }
   });
 }
 

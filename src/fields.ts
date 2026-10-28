@@ -2,21 +2,21 @@
 
 export interface AccessListEntry {
   address: string;
-  storage_keys: string[];
+  storageKeys: string[];
 }
 
 export interface Authorization {
-  chain_id: string;
+  chainId: string;
   address: string;
   nonce: number;
-  y_parity: number;
+  yParity: number;
   r: string;
   s: string;
 }
 
 export interface Withdrawal {
   index: number;
-  validator_index: number;
+  validatorIndex: number;
   address: string;
   amount: number;
 }
@@ -62,34 +62,19 @@ export interface LogFieldTypes {
   blockTimestamp: number | null;
 }
 
-/** Column (response key) of each log field, by request name. */
-export interface LogFieldColumns {
-  blockNumber: "block_number";
-  logIndex: "log_index";
-  transactionHash: "transaction_hash";
-  transactionIndex: "transaction_index";
-  address: "address";
-  topic0: "topic0";
-  topic1: "topic1";
-  topic2: "topic2";
-  topic3: "topic3";
-  data: "data";
-  blockTimestamp: "block_timestamp";
-}
-
-/** A log row with every field (each present only if selected). */
+/** A log row with every field (each present only if selected), keyed by request name. */
 export interface Log {
-  block_number?: number;
-  log_index?: number;
-  transaction_hash?: string;
-  transaction_index?: number;
+  blockNumber?: number;
+  logIndex?: number;
+  transactionHash?: string;
+  transactionIndex?: number;
   address?: string;
   topic0?: string | null;
   topic1?: string | null;
   topic2?: string | null;
   topic3?: string | null;
   data?: string;
-  block_timestamp?: number | null;
+  blockTimestamp?: number | null;
 }
 
 /** Field names for `fields.transaction`. */
@@ -279,74 +264,10 @@ export interface TransactionFieldTypes {
   timeboosted: number | null;
 }
 
-/** Column (response key) of each transaction field, by request name. */
-export interface TransactionFieldColumns {
-  blockNumber: "block_number";
-  transactionIndex: "transaction_index";
-  hash: "hash";
-  from: "from";
-  to: "to";
-  value: "value";
-  input: "input";
-  nonce: "nonce";
-  gas: "gas";
-  gasPrice: "gas_price";
-  maxFeePerGas: "max_fee_per_gas";
-  maxPriorityFeePerGas: "max_priority_fee_per_gas";
-  gasUsed: "gas_used";
-  cumulativeGasUsed: "cumulative_gas_used";
-  effectiveGasPrice: "effective_gas_price";
-  status: "status";
-  type: "type";
-  accessList: "access_list";
-  logsBloom: "logs_bloom";
-  chainId: "chain_id";
-  v: "v";
-  r: "r";
-  s: "s";
-  yParity: "y_parity";
-  contractAddress: "contract_address";
-  sighash: "sighash";
-  maxFeePerBlobGas: "max_fee_per_blob_gas";
-  blobVersionedHashes: "blob_versioned_hashes";
-  blobGasUsed: "blob_gas_used";
-  blobGasPrice: "blob_gas_price";
-  authorizationList: "authorization_list";
-  gasUsedForL1: "gas_used_for_l1";
-  l1BlockNumber: "l1_block_number";
-  requestId: "request_id";
-  ticketId: "ticket_id";
-  refundTo: "refund_to";
-  maxRefund: "max_refund";
-  submissionFeeRefund: "submission_fee_refund";
-  depositValue: "deposit_value";
-  retryTo: "retry_to";
-  retryValue: "retry_value";
-  retryData: "retry_data";
-  beneficiary: "beneficiary";
-  maxSubmissionFee: "max_submission_fee";
-  l1BaseFee: "l1_base_fee";
-  sourceHash: "source_hash";
-  mint: "mint";
-  isSystemTx: "is_system_tx";
-  depositNonce: "deposit_nonce";
-  depositReceiptVersion: "deposit_receipt_version";
-  l1Fee: "l1_fee";
-  l1GasPrice: "l1_gas_price";
-  l1GasUsed: "l1_gas_used";
-  l1BaseFeeScalar: "l1_base_fee_scalar";
-  l1BlobBaseFee: "l1_blob_base_fee";
-  l1BlobBaseFeeScalar: "l1_blob_base_fee_scalar";
-  daFootprintGasScalar: "da_footprint_gas_scalar";
-  operatorFeeScalar: "operator_fee_scalar";
-  operatorFeeConstant: "operator_fee_constant";
-  timeboosted: "timeboosted";
-}
-
-/** A transaction row with every field (each present only if selected). */
+/** A transaction row with every field (each present only if selected), keyed by request name. */
 export interface Transaction {
-  block_number?: number;
-  transaction_index?: number;
+  blockNumber?: number;
+  transactionIndex?: number;
   hash?: string;
   from?: string;
   to?: string | null;
@@ -354,56 +275,56 @@ export interface Transaction {
   input?: string;
   nonce?: number;
   gas?: number;
-  gas_price?: string | null;
-  max_fee_per_gas?: string | null;
-  max_priority_fee_per_gas?: string | null;
-  gas_used?: number;
-  cumulative_gas_used?: number;
-  effective_gas_price?: string;
+  gasPrice?: string | null;
+  maxFeePerGas?: string | null;
+  maxPriorityFeePerGas?: string | null;
+  gasUsed?: number;
+  cumulativeGasUsed?: number;
+  effectiveGasPrice?: string;
   status?: number | null;
   type?: number;
-  access_list?: AccessListEntry[] | null;
-  logs_bloom?: string;
-  chain_id?: number | null;
+  accessList?: AccessListEntry[] | null;
+  logsBloom?: string;
+  chainId?: number | null;
   v?: number;
   r?: string;
   s?: string;
-  y_parity?: number | null;
-  contract_address?: string | null;
+  yParity?: number | null;
+  contractAddress?: string | null;
   sighash?: string | null;
-  max_fee_per_blob_gas?: string | null;
-  blob_versioned_hashes?: string[] | null;
-  blob_gas_used?: number | null;
-  blob_gas_price?: string | null;
-  authorization_list?: Authorization[] | null;
-  gas_used_for_l1?: number | null;
-  l1_block_number?: number | null;
-  request_id?: string | null;
-  ticket_id?: string | null;
-  refund_to?: string | null;
-  max_refund?: string | null;
-  submission_fee_refund?: string | null;
-  deposit_value?: string | null;
-  retry_to?: string | null;
-  retry_value?: string | null;
-  retry_data?: string | null;
+  maxFeePerBlobGas?: string | null;
+  blobVersionedHashes?: string[] | null;
+  blobGasUsed?: number | null;
+  blobGasPrice?: string | null;
+  authorizationList?: Authorization[] | null;
+  gasUsedForL1?: number | null;
+  l1BlockNumber?: number | null;
+  requestId?: string | null;
+  ticketId?: string | null;
+  refundTo?: string | null;
+  maxRefund?: string | null;
+  submissionFeeRefund?: string | null;
+  depositValue?: string | null;
+  retryTo?: string | null;
+  retryValue?: string | null;
+  retryData?: string | null;
   beneficiary?: string | null;
-  max_submission_fee?: string | null;
-  l1_base_fee?: string | null;
-  source_hash?: string | null;
+  maxSubmissionFee?: string | null;
+  l1BaseFee?: string | null;
+  sourceHash?: string | null;
   mint?: string | null;
-  is_system_tx?: number | null;
-  deposit_nonce?: number | null;
-  deposit_receipt_version?: number | null;
-  l1_fee?: string | null;
-  l1_gas_price?: string | null;
-  l1_gas_used?: number | null;
-  l1_base_fee_scalar?: number | null;
-  l1_blob_base_fee?: string | null;
-  l1_blob_base_fee_scalar?: number | null;
-  da_footprint_gas_scalar?: number | null;
-  operator_fee_scalar?: number | null;
-  operator_fee_constant?: number | null;
+  isSystemTx?: number | null;
+  depositNonce?: number | null;
+  depositReceiptVersion?: number | null;
+  l1Fee?: string | null;
+  l1GasPrice?: string | null;
+  l1GasUsed?: number | null;
+  l1BaseFeeScalar?: number | null;
+  l1BlobBaseFee?: string | null;
+  l1BlobBaseFeeScalar?: number | null;
+  daFootprintGasScalar?: number | null;
+  operatorFeeScalar?: number | null;
+  operatorFeeConstant?: number | null;
   timeboosted?: number | null;
 }
 
@@ -501,70 +422,37 @@ export interface BlockFieldTypes {
   sendRoot: string | null;
 }
 
-/** Column (response key) of each block field, by request name. */
-export interface BlockFieldColumns {
-  number: "number";
-  hash: "hash";
-  parentHash: "parent_hash";
-  timestamp: "timestamp";
-  size: "size";
-  gasUsed: "gas_used";
-  gasLimit: "gas_limit";
-  baseFeePerGas: "base_fee_per_gas";
-  stateRoot: "state_root";
-  transactionsRoot: "transactions_root";
-  receiptsRoot: "receipts_root";
-  logsBloom: "logs_bloom";
-  difficulty: "difficulty";
-  totalDifficulty: "total_difficulty";
-  miner: "miner";
-  nonce: "nonce";
-  sha3Uncles: "sha3_uncles";
-  uncles: "uncles";
-  mixHash: "mix_hash";
-  extraData: "extra_data";
-  withdrawalsRoot: "withdrawals_root";
-  withdrawals: "withdrawals";
-  blobGasUsed: "blob_gas_used";
-  excessBlobGas: "excess_blob_gas";
-  parentBeaconBlockRoot: "parent_beacon_block_root";
-  requestsHash: "requests_hash";
-  l1BlockNumber: "l1_block_number";
-  sendCount: "send_count";
-  sendRoot: "send_root";
-}
-
-/** A block row with every field (each present only if selected). */
+/** A block row with every field (each present only if selected), keyed by request name. */
 export interface Block {
   number?: number;
   hash?: string;
-  parent_hash?: string;
+  parentHash?: string;
   timestamp?: number;
   size?: number;
-  gas_used?: number;
-  gas_limit?: number;
-  base_fee_per_gas?: string | null;
-  state_root?: string;
-  transactions_root?: string;
-  receipts_root?: string;
-  logs_bloom?: string;
+  gasUsed?: number;
+  gasLimit?: number;
+  baseFeePerGas?: string | null;
+  stateRoot?: string;
+  transactionsRoot?: string;
+  receiptsRoot?: string;
+  logsBloom?: string;
   difficulty?: string | null;
-  total_difficulty?: string | null;
+  totalDifficulty?: string | null;
   miner?: string;
   nonce?: string | null;
-  sha3_uncles?: string;
+  sha3Uncles?: string;
   uncles?: string[];
-  mix_hash?: string | null;
-  extra_data?: string;
-  withdrawals_root?: string | null;
+  mixHash?: string | null;
+  extraData?: string;
+  withdrawalsRoot?: string | null;
   withdrawals?: Withdrawal[] | null;
-  blob_gas_used?: number | null;
-  excess_blob_gas?: number | null;
-  parent_beacon_block_root?: string | null;
-  requests_hash?: string | null;
-  l1_block_number?: number | null;
-  send_count?: number | null;
-  send_root?: string | null;
+  blobGasUsed?: number | null;
+  excessBlobGas?: number | null;
+  parentBeaconBlockRoot?: string | null;
+  requestsHash?: string | null;
+  l1BlockNumber?: number | null;
+  sendCount?: number | null;
+  sendRoot?: string | null;
 }
 
 /** Response keys that hold uint256 amounts (decimal strings), per row type. */

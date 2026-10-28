@@ -36,7 +36,21 @@ test("query: typed fields become {name: true}, key and base URL are used, rows a
   assert.equal(page.meta.nextBlock, 19426010);
   assert.equal(page.meta.objects, 85);
   assert.match(page.meta.queryId, /^0x[0-9a-f]{64}$/);
-  assert.equal(typeof page.logs[0].block_number, "number");
+  assert.equal(typeof page.logs[0].blockNumber, "number");
+  assert.equal(page.logs[0].block_number, undefined);
+});
+
+test("rows are keyed by the request's camelCase names, nested struct keys too", async () => {
+  const { fetch } = stub([ok(arrow("eth-all-fields"))]);
+  const bl = new Bloklake({ baseUrl: "http://x", fetch });
+  const page = await bl.query({ fields: { transaction: ["hash", "accessList", "maxFeePerGas"], block: ["number", "withdrawals"] }, transactions: [{}] });
+  const tx = page.transactions.find((t) => t.accessList?.length);
+  assert.ok(tx && "maxFeePerGas" in tx && Array.isArray(tx.accessList[0].storageKeys));
+  const withdrawal = page.blocks.flatMap((b) => b.withdrawals ?? [])[0];
+  assert.equal(typeof withdrawal.validatorIndex, "number");
+  for (const row of [...page.transactions, ...page.blocks]) {
+    for (const k of Object.keys(row)) assert.ok(!k.includes("_"), `snake_case key ${k}`);
+  }
 });
 
 test("API errors carry status, code and request id; 4xx is not retried", async () => {

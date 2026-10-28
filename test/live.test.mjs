@@ -2,12 +2,18 @@
 // Skipped when BLOKLAKE_TEST_URL is unset. Uses Ethereum blocks 19426000..19427499.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { Bloklake } from "../dist/index.js";
+import { Bloklake, camelCase } from "../dist/index.js";
 
 const url = process.env.BLOKLAKE_TEST_URL;
 const opts = { skip: !url && "set BLOKLAKE_TEST_URL to run" };
 const TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+
+/** The server's JSON rows with the client's camelCase keys, nested ones included. */
+const camelKeys = (v) =>
+  Array.isArray(v) ? v.map(camelKeys)
+  : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [camelCase(k), camelKeys(x)]))
+  : v;
 
 async function serverJson(body) {
   const r = await fetch(`${url}/query/json`, {
@@ -18,7 +24,7 @@ async function serverJson(body) {
   return r.json();
 }
 
-test("query matches /query/json for every field", opts, async () => {
+test("query matches /query/json for every field, keyed in camelCase", opts, async () => {
   const bl = new Bloklake({ baseUrl: url });
   const schema = await bl.schema();
   const all = (rt) => schema.row_types[rt].map((f) => f.dsl_name);
@@ -26,9 +32,9 @@ test("query matches /query/json for every field", opts, async () => {
     fields: { transaction: all("transactions"), log: all("logs"), block: all("blocks") } };
   const page = await bl.query(q);
   const expected = await serverJson({ ...q, fields: Object.fromEntries(Object.entries(q.fields).map(([k, v]) => [k, Object.fromEntries(v.map((n) => [n, true]))])) });
-  assert.deepStrictEqual(page.transactions, expected.transactions);
-  assert.deepStrictEqual(page.logs, expected.logs);
-  assert.deepStrictEqual(page.blocks, expected.blocks);
+  assert.deepStrictEqual(page.transactions, camelKeys(expected.transactions));
+  assert.deepStrictEqual(page.logs, camelKeys(expected.logs));
+  assert.deepStrictEqual(page.blocks, camelKeys(expected.blocks));
   assert.deepStrictEqual(page.meta.unavailableFields, expected.unavailable_fields);
 });
 

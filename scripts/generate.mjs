@@ -4,6 +4,19 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const schema = JSON.parse(readFileSync(new URL("./schema.json", import.meta.url), "utf8"));
 
+/** `block_number` → `blockNumber`; must match src/decode.ts's `camelCase`. */
+const camelCase = (name) => name.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
+
+// Rows are keyed by request name, which the decoder derives from the column name. That only
+// works while every field's request name is its column name in camelCase.
+for (const [rt, fields] of Object.entries(schema.row_types)) {
+  for (const f of fields) {
+    if (camelCase(f.name) !== f.dsl_name) {
+      throw new Error(`${rt}.${f.name}: request name ${f.dsl_name} isn't the column name in camelCase; the client's row keys need a lookup table`);
+    }
+  }
+}
+
 /** uint256 amounts: 32 bytes like a hash, but decimal strings in JSON (the server's catalogue). */
 const UINT256 = ["max_refund", "submission_fee_refund", "deposit_value", "retry_value", "max_submission_fee", "l1_base_fee"];
 
@@ -42,7 +55,7 @@ function tsType(t, column, top) {
   if (t.kind === "list") return `${tsType(t.item, column, false)}[]`;
   const name = STRUCT_NAMES[column] ?? `${column}_entry`;
   if (!structs.has(name)) {
-    structs.set(name, `export interface ${name} {\n${t.fields.map((f) => `  ${f.name}: ${tsType(f.type, f.name, false)};`).join("\n")}\n}`);
+    structs.set(name, `export interface ${name} {\n${t.fields.map((f) => `  ${camelCase(f.name)}: ${tsType(f.type, f.name, false)};`).join("\n")}\n}`);
   }
   return name;
 }
@@ -65,14 +78,9 @@ export interface ${rt.field}Types {
 ${fields.map((f) => `  /** ${doc(f)} */\n  ${f.dsl_name}: ${tsType(parseType(f.arrow_type), f.name, true)}${f.nullable ? " | null" : ""};`).join("\n")}
 }
 `);
-  parts.push(`/** Column (response key) of each ${rt.key.slice(0, -1)} field, by request name. */
-export interface ${rt.field}Columns {
-${fields.map((f) => `  ${f.dsl_name}: "${f.name}";`).join("\n")}
-}
-`);
-  parts.push(`/** A ${rt.key.slice(0, -1)} row with every field (each present only if selected). */
+  parts.push(`/** A ${rt.key.slice(0, -1)} row with every field (each present only if selected), keyed by request name. */
 export interface ${rt.row} {
-${fields.map((f) => `  ${f.name}?: ${tsType(parseType(f.arrow_type), f.name, true)}${f.nullable ? " | null" : ""};`).join("\n")}
+${fields.map((f) => `  ${f.dsl_name}?: ${tsType(parseType(f.arrow_type), f.name, true)}${f.nullable ? " | null" : ""};`).join("\n")}
 }
 `);
 }
