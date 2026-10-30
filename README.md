@@ -96,7 +96,7 @@ await bl.query({ logs: [{ addressSet: setId, topic0: [SWAP] }], fields: { log: [
 await bl.getSet(setId);
 await bl.deleteSet(setId);
 
-await bl.prepare({ logs: [...], fields: {...} }); // { queryId, expiresIn }
+await bl.prepare({ logs: [{ topic0: [TRANSFER] }], fields: { log: ["data"] } }); // { queryId, expiresIn }
 await bl.status();  // { chainId, firstBlock, archiveHeight, finalizedBlock } (free)
 await bl.schema();  // every field and whether this chain has it (free)
 await bl.account(); // plan, rps, balance or usage (free)
