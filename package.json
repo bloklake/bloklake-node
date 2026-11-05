@@ -12,13 +12,19 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
-  "engines": { "node": ">=18" },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test test/*.test.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p test/tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p test/tsconfig.json --noEmit",
+    "prepublishOnly": "npm test"
   },
   "dependencies": {
     "apache-arrow": "^21.0.0"
@@ -26,5 +32,13 @@
   "devDependencies": {
     "@types/node": "^22.10.0",
     "typescript": "^5.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bloklake/bloklake-node.git"
+  },
+  "homepage": "https://bloklake.com",
+  "bugs": {
+    "url": "https://github.com/bloklake/bloklake-node/issues"
   }
 }
